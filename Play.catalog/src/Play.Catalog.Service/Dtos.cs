@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Play.Catalog.Service.Dtos
 {
@@ -10,13 +11,13 @@ namespace Play.Catalog.Service.Dtos
         DateTimeOffset CreatedDate
     );
     public record CreateItemDto(
-        string Name, 
+        [Required] string Name, 
         string Description, 
-        decimal Price
+        [Range(0,100)] decimal Price
     );
     public record UpdateItemDto(
-        string Name, 
+        [Required] string Name, 
         string Description, 
-        decimal Price
+        [Range(0,100)]decimal Price
     );
 }
