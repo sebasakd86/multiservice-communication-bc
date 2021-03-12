@@ -14,10 +14,8 @@ namespace Play.Catalog.Service.Repositories
         /// </summary>
         private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
 
-        public ItemsRepository()
+        public ItemsRepository(IMongoDatabase database)
         {
-            var mongoClient = new MongoClient("mongodb://localhost:27017");
-            var database = mongoClient.GetDatabase("Catalog");
             dbCollection = database.GetCollection<Item>(collectionName);
         }
 
@@ -37,13 +35,13 @@ namespace Play.Catalog.Service.Repositories
             }
             await dbCollection.InsertOneAsync(entity);
         }
-        public async Task Update(Item entity)
+        public async Task Update(Guid id, Item entity)
         {
             if(entity == null){
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            FilterDefinition<Item> filter = GetFilterById(entity.Id);
+            FilterDefinition<Item> filter = GetFilterById(id);
             await dbCollection.ReplaceOneAsync(filter, entity);
         }
 

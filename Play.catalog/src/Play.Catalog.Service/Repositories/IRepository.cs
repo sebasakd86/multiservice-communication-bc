@@ -11,6 +11,6 @@ namespace Play.Catalog.Service.Repositories
         Task<Item> Get(Guid id);
         Task<IReadOnlyCollection<Item>> GetAll();
         Task Remove(Guid id);
-        Task Update(Item entity);
+        Task Update(Guid id, Item entity);
     }
 }
