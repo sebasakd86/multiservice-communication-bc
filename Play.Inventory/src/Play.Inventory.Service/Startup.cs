@@ -4,15 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Play.Catalog.Service.Entities;
 using Play.Common.MongoDB;
-using Play.Common.Settings;
+using Play.Inventory.Service.Clients;
+using Play.Inventory.Service.Entities;
 
-namespace Play.Catalog.Service
+namespace Play.Inventory.Service
 {
     public class Startup
     {
-        private ServiceSettings _settings;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -22,20 +21,20 @@ namespace Play.Catalog.Service
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            _settings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-            //Moved to extension method.
-            services.AddMongo().AddMongoRepository<Item>("items");
+        {
 
-            services.AddControllers(opt => {
-                // so net doenst remove the async sufix from methods and can set the right header @ CreatedAtAction
-                opt.SuppressAsyncSuffixInActionNames = false;
+            services.AddMongo()
+                    .AddMongoRepository<InventoryItem>("inventoryItems");
+
+            services.AddHttpClient<CatalogClient>(client => {
+                client.BaseAddress = new System.Uri("http://localhost:5000");
             });
+
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Catalog.Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Inventory.Service", Version = "v1" });
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +44,7 @@ namespace Play.Catalog.Service
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Play.Catalog.Service v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Play.Inventory.Service v1"));
             }
 
             // app.UseHttpsRedirection();
