@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,7 @@ namespace Play.Catalog.Service
         { 
             _settings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
             //Moved to extension method.
-            services.AddMongo().AddMongoRepository<Item>("items");
+            services.AddMongo().AddMongoRepository<Item>("items");            
 
             services.AddControllers(opt => {
                 // so net doenst remove the async sufix from methods and can set the right header @ CreatedAtAction
