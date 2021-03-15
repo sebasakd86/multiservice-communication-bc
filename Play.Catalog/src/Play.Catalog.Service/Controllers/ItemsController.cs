@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Play.Catalog.Service.Dtos;
 using Play.Catalog.Service.Entities;
-using Play.Catalog.Service.Repositories;
+using Play.Common;
 //using Play.Catalog.Service.Models;
 
 namespace Play.Catalog.Service.Controllers
@@ -14,8 +14,8 @@ namespace Play.Catalog.Service.Controllers
     [ApiController]
     public class ItemsController : ControllerBase
     {
-        private readonly IRepository _repo;
-        public ItemsController(IRepository repo)
+        private readonly IRepository<Item> _repo;
+        public ItemsController(IRepository<Item> repo)
         {
             this._repo = repo;
         }
