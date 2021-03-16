@@ -11,6 +11,15 @@ services:
             - 27017:27017
         volumes:
             - mongodbdata:/data/db
-
+    rabbitmq:
+        image: rabbitmq:management
+        container_name: rabbitmq
+        ports:
+            - 5672:5672 #to publish messages
+            - 15672:15672 #to access the RabbitMQ portal
+        volumes:
+            - rabbitmqdata:/var/lib/rabbitmq
+        hostname: rabbitmq #how it stores data internally, every time it starts, it assigns a new value, if not set here
 volumes:
     mongodbdata:
+    rabbitmqdata:
