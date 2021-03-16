@@ -1,6 +1,3 @@
-using System;
-using MassTransit;
-using MassTransit.Definition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Play.Catalog.Service.Entities;
-using Play.Catalog.Service.Settings;
 using Play.Common.MongoDB;
 using Play.Common.Settings;
+using Play.Common.MassTransit;
 
 namespace Play.Catalog.Service
 {
@@ -29,19 +26,9 @@ namespace Play.Catalog.Service
         { 
             _settings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
             //Moved to extension method.
-            services.AddMongo().AddMongoRepository<Item>("items");
-
-            services.AddMassTransit(x => 
-            {
-                x.UsingRabbitMq((context, configurator) => 
-                {
-                    var rabbitMqSettings = Configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-                    configurator.Host(rabbitMqSettings.Host);
-                    configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(_settings.ServiceName, false));
-                });
-            });
-            //Starts the RabbitMQ bus
-            services.AddMassTransitHostedService();
+            services.AddMongo()
+                    .AddMongoRepository<Item>("items")
+                    .AddMassTransitWithRabbitMq();
 
             services.AddControllers(opt => {
                 // so net doenst remove the async sufix from methods and can set the right header @ CreatedAtAction
