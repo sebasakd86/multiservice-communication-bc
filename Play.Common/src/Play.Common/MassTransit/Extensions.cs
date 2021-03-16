@@ -1,4 +1,6 @@
+using System;
 using System.Reflection;
+using GreenPipes;
 using MassTransit;
 using MassTransit.Definition;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,11 @@ namespace Play.Common.MassTransit
                     var rabbitMqSettings = config.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                     configurator.Host(rabbitMqSettings.Host);
                     configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(settings.ServiceName, false));
+                    configurator.UseMessageRetry(retryConfig => 
+                    {
+                        //how many times to retry the method consumption evey X time inbetween.
+                        retryConfig.Interval(3, TimeSpan.FromSeconds(5));
+                    });
                 });
             });
             //Starts the RabbitMQ bus
